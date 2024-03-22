@@ -3,7 +3,6 @@ import TransactionReport from "./TransactionReport";
 import InventoryReport from "./InventoryReport";
 
 const App = () => {
-
   const transactions = [
     { id: 1, date: "2024-03-01", customer: "John Doe", totalAmount: 150.25 },
     { id: 2, date: "2024-03-02", customer: "Jane Smith", totalAmount: 200.5 },
@@ -48,13 +47,24 @@ const App = () => {
   const currentDate = new Date().toLocaleString();
 
   return (
-    <div className="container mt-5">
-      <p>Sales and Inventory Report</p>
-      <p>{currentDate}</p>
-      <p>John Smith</p>
-      <p>1.0</p>
-      <TransactionReport transactions={transactions} />
-      <InventoryReport inventory={inventory} />
+    // <div className="container mt-5">
+    //   <p>Sales and Inventory Report</p>
+    //   <p>{currentDate}</p>
+    //   <p>John Smith</p>
+    //   <p>1.0</p>
+    //   <TransactionReport transactions={transactions} />
+    //   <InventoryReport inventory={inventory} />
+    // </div "100vh",
+    //   }}div>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+      }}
+    >
+      <h1>🚧 Page Under Construction 🚧</h1>
     </div>
   );
 };

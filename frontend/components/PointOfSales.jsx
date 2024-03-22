@@ -30,7 +30,7 @@ const PointOfSalesPage = () => {
       }
       return product;
     });
-    setSelectedProducts(updatedSelectedProducts.filter(p => p.quantity > 0));
+    setSelectedProducts(updatedSelectedProducts.filter((p) => p.quantity > 0));
   };
 
   const handleIncreaseQuantity = (productId) => {
@@ -43,23 +43,51 @@ const PointOfSalesPage = () => {
     setSelectedProducts(updatedSelectedProducts);
   };
 
+  const clearProducts = (productId) => {
+    const updatedSelectedProducts = selectedProducts.map((product) => {
+      if (product.id === productId) {
+        return { ...product, quantity: 0 };
+      }
+      return product;
+    });
+    setSelectedProducts(updatedSelectedProducts);
+    setSelectedProducts(updatedSelectedProducts.filter((p) => p.quantity > 0));
+  };
   const generateReceipt = () => {
     const receiptContent = selectedProducts.map((product, index) => (
       <div key={index} className="mb-3">
-        <span style={{ display: "flex"}}>
+        <span style={{ display: "flex" }}>
           <button
             className="btn btn-sm btn-primary"
             onClick={() => handleReduceQuantity(product.id)}
           >
             -
           </button>
-          <p style={{ margin:"10px",height:"5px", display: "flex",justifyContent:"center",alignItems:"center"}}>{product.quantity}</p>
-          
+          <p
+            style={{
+              margin: "10px",
+              height: "5px",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            {product.quantity}
+          </p>
+
           <button
             className="btn btn-sm btn-primary"
             onClick={() => handleIncreaseQuantity(product.id)}
           >
             +
+          </button>
+          {"    "}
+          <button
+            style={{ marginLeft: "10px" }}
+            className="btn btn-sm btn-secondary"
+            onClick={() => clearProducts(product.id)}
+          >
+            x
           </button>
         </span>
         <span>
@@ -68,9 +96,15 @@ const PointOfSalesPage = () => {
       </div>
     ));
     return (
-      <div style={{ border: "1px solid lightgrey", borderRadius: "5px", padding: "10px" }}>
+      <div
+        style={{
+          border: "1px solid lightgrey",
+          borderRadius: "5px",
+          padding: "10px",
+        }}
+      >
         <div style={{ display: "flex", flexDirection: "column" }}>
-          <b>Rite Choice Water Store</b>
+          <b>Rite Choice Water and Delight</b>
           <small>12-23-34 4:00PM</small>
         </div>
 
@@ -86,7 +120,15 @@ const PointOfSalesPage = () => {
         </p>
         <button
           className="btn btn-sm btn-primary m-2"
-          onClick={() => console.log("transaction recorded")}
+          onClick={() => {
+            const total = selectedProducts
+              .reduce(
+                (total, product) => total + product.price * product.quantity,
+                0
+              )
+              .toFixed(2);
+            alert(`transaction recorded. Total $${total}`);
+          }}
         >
           Proceed to checkout
         </button>
