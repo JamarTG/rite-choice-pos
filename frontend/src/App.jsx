@@ -1,24 +1,25 @@
 import Navbar from "../components/Navbar";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Dashboard from "../components/Dashboard";
-import ProductManagement from "../components/ProductManagement";
-import ReportGeneration from "../components/ReportGeneration";
-import SalesTrackingPage from "../components/PointOfSales";
-import PointOfSalesPage from "../components/PointOfSales";
-
+import Dashboard from "../pages/Dashboard.jsx";
+import ProductManagement from "../pages/ProductManagement.jsx";
+import ReportGeneration from "../pages/ReportGeneration.jsx";
+import Auth from "../components/Auth.jsx";
+import PointOfSalesPage from "../pages/PointOfSales.jsx";
+import { AuthProvider } from "../contexts/auth.jsx";
 function App() {
   return (
-    <>
+    <AuthProvider>
       <Router>
-        <Navbar/>
+        <Navbar />
         <Routes>
-          <Route exact path="/" element={<Dashboard/>}/>
-          <Route path="/product-management" element={<ProductManagement/>}/>
-          <Route path="/pos" element={<PointOfSalesPage/>} />
-          <Route path="/report-generation" element={<ReportGeneration/>}/>
+          <Route exact path="/" element={<Dashboard />} />
+          <Route path="/product-management" element={<ProductManagement />} />
+          <Route path="/pos" element={<PointOfSalesPage />} />
+          <Route path="/report-generation" element={<ReportGeneration />} />
+          <Route path="/auth" element={<Auth />} />
         </Routes>
       </Router>
-    </>
+    </AuthProvider>
   );
 }
 
