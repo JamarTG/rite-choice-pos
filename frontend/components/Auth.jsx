@@ -7,8 +7,8 @@ const Auth = () => {
   const [key, setKey] = useState('login');
 
   return (
-    <Card className="shadow-sm">
-      <Card.Header className="text-center">
+    <Card style={{border:"none",backgroundColor:"transparent"}} className="shadow-sm">
+      <Card.Header style={{display:"flex", justifyContent:"center"}} className="text-center">
         <Tabs
           id="controlled-tab-example"
           activeKey={key}
@@ -20,7 +20,7 @@ const Auth = () => {
         </Tabs>
       </Card.Header>
       <Card.Body className="d-flex justify-content-center align-items-center">
-        <div className="w-100">
+        <div className="w-50">
           {key === 'login' ? <Login /> : <Register />}
         </div>
       </Card.Body>

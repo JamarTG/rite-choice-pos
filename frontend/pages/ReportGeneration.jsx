@@ -1,8 +1,18 @@
 import React from "react";
 import TransactionReport from "../components/TransactionReport.jsx";
 import InventoryReport from "../components/InventoryReport.jsx";
+import { useAuth } from "../contexts/auth.jsx";
+import { Navigate } from "react-router-dom";
 
 const App = () => {
+  const { isAuthorized, isLoading } = useAuth();
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+  if (!isAuthorized) {
+    return <Navigate to="/auth" />;
+  }
   const transactions = [
     { id: 1, date: "2024-03-01", customer: "John Doe", totalAmount: 150.25 },
     { id: 2, date: "2024-03-02", customer: "Jane Smith", totalAmount: 200.5 },
