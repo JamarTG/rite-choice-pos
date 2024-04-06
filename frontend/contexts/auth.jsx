@@ -1,7 +1,6 @@
 import { createContext, useState, useContext, useEffect } from "react";
 import axios from "axios";
 
-// Define AuthContext
 const AuthContext = createContext();
 
 export const useAuth = () => {
@@ -16,17 +15,14 @@ export const AuthProvider = ({ children }) => {
   const verifyToken = async (token) => {
     try {
    
-      const response = await axios.post("http://localhost:3000/auth/verify", { token });
+      const response = await axios.post("http://localhost:3000/auth-api/verify", { token });
 
-     
       if (response.data.success) {
-        console.log("YES")
         setIsAuthorized(true);
-      } else {
-        console.log("nooo")
+      } else { 
         setIsAuthorized(false);
         setToken(null);
-        // localStorage.removeItem("token");
+
       }
 
       setIsLoading(false);

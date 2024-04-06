@@ -1,34 +1,44 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "../contexts/auth";
 import { Navigate } from "react-router-dom";
 
 const PointOfSalesPage = () => {
   const { isAuthorized, isLoading } = useAuth();
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (!isAuthorized) {
-    return <Navigate to="/auth" />;
-  }
-
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:3000/product-api/products"
+        );
+        const fetchedProducts = await response.json();
+
+        setProducts(fetchedProducts.data);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value.toLowerCase());
   };
 
-  const handleCategoryChange = (event) => {
-    setSelectedCategory(event.target.value);
+  const handleCategoryChange = (categoryId) => {
+    setSelectedCategory(categoryId);
     setSearchTerm("");
   };
 
   const handleAddProduct = (product) => {
     const existingProductIndex = selectedProducts.findIndex(
-      (p) => p.id === product.id
+      (p) => p._id === product._id
     );
 
     if (existingProductIndex !== -1) {
@@ -73,7 +83,7 @@ const PointOfSalesPage = () => {
           </div>
         </div>
         <div className="d-flex align-items-center">
-          <span>${(product.price * product.quantity).toFixed(2)}</span>
+          <span>${product.unitPrice * product.quantity}</span>
           <button
             className="btn btn-sm btn-secondary ml-2"
             onClick={() => handleQuantityChange(product.id, 0)}
@@ -85,7 +95,10 @@ const PointOfSalesPage = () => {
     ));
 
     const total = selectedProducts
-      .reduce((total, product) => total + product.price * product.quantity, 0)
+      .reduce(
+        (total, product) => total + product.unitPrice * product.quantity,
+        0
+      )
       .toFixed(2);
 
     return (
@@ -124,47 +137,13 @@ const PointOfSalesPage = () => {
     { id: "mineral", name: "Mineral Water" },
   ];
 
-  const products = [
-    {
-      id: 1,
-      name: "Natural Spring Water 500ml",
-      category: "spring",
-      price: 279.51,
-    },
-    {
-      id: 2,
-      name: "Purified Drinking Water 1L",
-      category: "drinking",
-      price: 209.37,
-    },
-    { id: 3, name: "Mineral Water 1.5L", category: "mineral", price: 419.25 },
-    {
-      id: 4,
-      name: "Natural Spring Water 1L",
-      category: "spring",
-      price: 279.51,
-    },
-    {
-      id: 5,
-      name: "Purified Drinking Water 1.5L",
-      category: "drinking",
-      price: 209.37,
-    },
-    { id: 6, name: "Mineral Water 1L", category: "mineral", price: 419.25 },
-    {
-      id: 7,
-      name: "Natural Spring Water 1.5L",
-      category: "spring",
-      price: 279.51,
-    },
-    {
-      id: 8,
-      name: "Purified Drinking Water 500ml",
-      category: "drinking",
-      price: 209.37,
-    },
-    { id: 9, name: "Mineral Water 500ml", category: "mineral", price: 419.25 },
-  ];
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!isAuthorized) {
+    return <Navigate to="/auth" />;
+  }
 
   return (
     <div className="container mt-5">
@@ -172,6 +151,7 @@ const PointOfSalesPage = () => {
         <div className="col-md-4">
           <h4 className="mb-3">Categories</h4>
           <div className="list-group">
+          
             {categories.map((category) => (
               <button
                 key={category.id}
@@ -179,8 +159,7 @@ const PointOfSalesPage = () => {
                 className={`list-group-item list-group-item-action ${
                   selectedCategory === category.id ? "active" : ""
                 }`}
-                onClick={handleCategoryChange}
-                value={category.id}
+                onClick={() => handleCategoryChange(category.id)}
               >
                 {category.name}
               </button>
@@ -197,14 +176,17 @@ const PointOfSalesPage = () => {
               onChange={handleSearch}
             />
           </div>
-          <ul className="list-group">
+          <ul className="list-group" style={{ maxHeight: '300px', overflowY: 'auto' }}>
+
+      
             {products
-              .filter(
-                (product) =>
-                  (selectedCategory === "all" ||
-                    product.category === selectedCategory) &&
-                  product.name.toLowerCase().includes(searchTerm)
-              )
+              .filter((product) => {
+                return (
+                  selectedCategory === "all" ||
+                  (product.type === selectedCategory &&
+                    product.name.toLowerCase().includes(searchTerm))
+                );
+              })
               .map((product) => (
                 <li
                   key={product.id}
@@ -213,7 +195,7 @@ const PointOfSalesPage = () => {
                 >
                   <span style={{ flex: "0 0 50%" }}>{product.name}</span>
                   <span style={{ flex: "0 0 25%" }}>
-                    ${product.price.toFixed(2)}
+                    ${product.unitPrice.toFixed(2)}
                   </span>
                   <div
                     className="input-group input-group-sm"
@@ -223,13 +205,6 @@ const PointOfSalesPage = () => {
                       justifyContent: "flex-end",
                     }}
                   >
-                    {/* <input
-                      type="number"
-                      min="1"
-                      className="form-control"
-                      value={selectedProducts.find(p => p.id === product.id)?.quantity || 1}
-                      onChange={(e) => handleQuantityChange(product.id, e.target.value)}
-                    /> */}
                     <button
                       className="btn btn-primary"
                       onClick={() => handleAddProduct(product)}

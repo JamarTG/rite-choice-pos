@@ -20,7 +20,7 @@ const Register = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:3000/auth/register', {
+      const response = await axios.post('http://localhost:3000/auth-api/register', {
         name,
         email,
         password,
@@ -99,7 +99,7 @@ const Register = () => {
         >
           <option value="">Select Role</option>
           <option value="Manager">Manager</option>
-          <option value="Staff Member">Staff Member</option>
+          <option value="Cashier">Cashier</option>
         </FormControl>
       </FormGroup>
 

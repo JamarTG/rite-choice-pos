@@ -2,21 +2,23 @@ import express from "express";
 import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import cors from "cors"
+import cors from "cors";
 
-
-import authRoutes from "./routes/index.js/authentication.js";
+import authRoutes from "./routes/auth.js";
+import productRoutes from "./routes/product.js";
+import reportRoutes from "./routes/report.js"
 
 dotenv.config();
 
 const app = express();
 
-// Body parser middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
-// Routes
-app.use("/auth", authRoutes);
+
+app.use("/auth-api", authRoutes);
+app.use("/product-api", productRoutes);
+app.use("/report-api", reportRoutes);
 
 const setupDB = () => {
   mongoose

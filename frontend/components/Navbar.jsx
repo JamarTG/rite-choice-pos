@@ -9,7 +9,14 @@ function NavigationalBar() {
   const { isAuthorized } = useAuth();
 
   return (
-    <Navbar expand="lg" className="bg-body-tertiary">
+    <Navbar
+      expand="lg"
+      className="bg-body-tertiary"
+      style={{
+        position: "sticky",
+        bottom: 0,
+      }}
+    >
       <Container>
         <Navbar.Brand as={NavLink} to="/">
           💧 Rite Choice Water and Delight

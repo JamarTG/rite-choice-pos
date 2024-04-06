@@ -1,6 +1,7 @@
 import React from "react";
 import TransactionReport from "../components/TransactionReport.jsx";
 import InventoryReport from "../components/InventoryReport.jsx";
+import SalesReport from "../components/SalesReport.jsx";
 import { useAuth } from "../contexts/auth.jsx";
 import { Navigate } from "react-router-dom";
 
@@ -66,16 +67,7 @@ const App = () => {
     //   <InventoryReport inventory={inventory} />
     // </div "100vh",
     //   }}div>
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "100vh",
-      }}
-    >
-      <h1>🚧 Page Under Construction 🚧</h1>
-    </div>
+    <SalesReport/>
   );
 };
 
