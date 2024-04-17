@@ -44,7 +44,9 @@ function ProductManagement() {
       newProduct.name.trim() !== "" &&
       newProduct.description.trim() !== "" &&
       newProduct.type.trim() !== "" &&
-      newProduct.unitPrice.trim() !== ""
+      newProduct.unitPrice !== null &&
+      newProduct.unitPrice !== undefined &&
+      newProduct.unitPrice !== ""
     ) {
       try {
         const response = await fetch(
@@ -57,8 +59,8 @@ function ProductManagement() {
             body: JSON.stringify(newProduct),
           }
         );
-
-        if (response.status === 201) {
+  
+        if (response.ok) {
           const data = await response.json();
           setProducts([...products, data]);
           setNewProduct({
@@ -71,7 +73,7 @@ function ProductManagement() {
           });
           setShowModal(false);
         } else {
-          console.error("Failed to add product");
+          console.error("Failed to add product", await response.text());
         }
       } catch (error) {
         console.error("Error adding product:", error);

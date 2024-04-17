@@ -1,7 +1,9 @@
 import Product from "../schemas/product.js";
+import { v4 as uuidv4 } from 'uuid';
 
 class ProductController {
   static async getAllProducts(req, res) {
+
     try {
       const products = await Product.find();
       res.status(200).json({ success: true, data: products });
@@ -43,7 +45,10 @@ class ProductController {
         quantitySold,
       } = req.body;
 
+  
+
       const newProduct = new Product({
+        _id: uuidv4(),
         name,
         description,
         type,
@@ -54,6 +59,7 @@ class ProductController {
       });
 
       await newProduct.save();
+
 
       res.status(201).json({
         success: true,
@@ -132,34 +138,37 @@ class ProductController {
     }
   }
 
-  static async recordSale(req, res) {
+  static async recordPayment(req, res) {
+
+
     try {
-      const productId = req.params.id;
-      const { quantity } = req.body;
+      const products = req.body;
 
-      const product = await Product.findById(productId);
-
-      if (!product) {
-        return res
-          .status(404)
-          .json({ success: false, message: "Product not found" });
+  
+      for (const { productId, quantity } of products) {
+        const product = await Product.findById(productId);
+  
+        if (!product) {
+          return res
+            .status(404)
+            .json({ success: false, message: `Product with ID ${productId} not found` });
+        }
+  
+        if (quantity > product.amountInStock) {
+          return res
+            .status(400)
+            .json({ success: false, message: `Not enough stock available for product ${productId}` });
+        }
+  
+        product.amountInStock -= quantity;
+        product.quantitySold += quantity;
+  
+        await product.save();
       }
-
-      if (quantity > product.amountInStock) {
-        return res
-          .status(400)
-          .json({ success: false, message: "Not enough stock available" });
-      }
-
-      product.amountInStock -= quantity;
-      product.quantitySold += quantity;
-
-      await product.save();
-
+  
       res.status(200).json({
         success: true,
-        message: "Sale recorded successfully",
-        data: product,
+        message: "Payment recorded successfully",
       });
     } catch (error) {
       res

@@ -7,6 +7,7 @@ import ReportGeneration from "../pages/ReportGeneration.jsx";
 import Auth from "../components/Auth.jsx";
 import PointOfSalesPage from "../pages/PointOfSales.jsx";
 import { AuthProvider } from "../contexts/auth.jsx";
+import CheckoutPage from "../components/CheckoutPage.jsx";
 function App() {
   return (
     <AuthProvider>
@@ -18,6 +19,7 @@ function App() {
           <Route path="/pos" element={<PointOfSalesPage />} />
           <Route path="/report-generation" element={<ReportGeneration />} />
           <Route path="/auth" element={<Auth />} />
+    
         </Routes>
      
       </Router>

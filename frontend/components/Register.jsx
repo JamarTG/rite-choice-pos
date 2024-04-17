@@ -99,7 +99,7 @@ const Register = () => {
         >
           <option value="">Select Role</option>
           <option value="Manager">Manager</option>
-          <option value="Cashier">Cashier</option>
+          <option value="Regular">Regular</option>
         </FormControl>
       </FormGroup>
 

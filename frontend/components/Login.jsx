@@ -35,7 +35,7 @@ const Login = () => {
         setError("")
         setIsAuthorized(true);
         setTimeout(() => {
-          navigate("/pos");
+          navigate("/product-management");
         }, 500);
       }
     } catch (err) {
@@ -66,7 +66,7 @@ const Login = () => {
           {error && <Alert variant="danger">{error}</Alert>}
           {message && <Alert variant="success">{message}</Alert>}
           <FormGroup controlId="email">
-            <FormLabel>Email address</FormLabel>
+            <FormLabel>Company Email address</FormLabel>
             <FormControl
               type="email"
               placeholder="Enter email"

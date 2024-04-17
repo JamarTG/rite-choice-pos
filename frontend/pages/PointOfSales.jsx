@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { useAuth } from "../contexts/auth";
-import { Navigate } from "react-router-dom";
+import CheckoutPage from "../components/CheckoutPage";
 
 const PointOfSalesPage = () => {
-  const { isAuthorized, isLoading } = useAuth();
-
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [products, setProducts] = useState([]);
+  const [showCheckout, setShowCheckout] = useState(false);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -52,7 +50,7 @@ const PointOfSalesPage = () => {
 
   const handleQuantityChange = (productId, quantity) => {
     const updatedSelectedProducts = selectedProducts.map((product) => {
-      if (product.id === productId) {
+      if (product._id === productId) {
         return { ...product, quantity: quantity };
       }
       return product;
@@ -67,7 +65,7 @@ const PointOfSalesPage = () => {
   const generateReceipt = () => {
     const receiptContent = selectedProducts.map((product) => (
       <div
-        key={product.id}
+        key={product._id}
         className="d-flex justify-content-between align-items-center receipt-item"
       >
         <div>
@@ -75,10 +73,12 @@ const PointOfSalesPage = () => {
           <div className="d-flex align-items-center">
             <input
               type="number"
-              min="1"
+              min="0"
               className="form-control quantity-input mx-2"
               value={product.quantity}
-              onChange={(e) => handleQuantityChange(product.id, e.target.value)}
+              onChange={(e) =>
+                handleQuantityChange(product._id, e.target.value)
+              }
             />
           </div>
         </div>
@@ -86,7 +86,7 @@ const PointOfSalesPage = () => {
           <span>${product.unitPrice * product.quantity}</span>
           <button
             className="btn btn-sm btn-secondary ml-2"
-            onClick={() => handleQuantityChange(product.id, 0)}
+            onClick={() => handleQuantityChange(product._id, 0)}
           >
             x
           </button>
@@ -116,9 +116,9 @@ const PointOfSalesPage = () => {
         </div>
         <button
           className="btn btn-primary btn-block mt-3"
-          onClick={() => alert(`Transaction recorded. Total $${total}`)}
+          onClick={() => setShowCheckout(true)}
         >
-          Proceed to checkout
+          Continue to Payment
         </button>
         <button
           className="btn btn-danger btn-block mt-2"
@@ -137,12 +137,19 @@ const PointOfSalesPage = () => {
     { id: "mineral", name: "Mineral Water" },
   ];
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (!isAuthorized) {
-    return <Navigate to="/auth" />;
+  if (showCheckout) {
+    return (
+      <CheckoutPage
+        selectedProducts={selectedProducts}
+        setShowCheckout={setShowCheckout}
+        total={selectedProducts
+          .reduce(
+            (total, product) => total + product.unitPrice * product.quantity,
+            0
+          )
+          .toFixed(2)}
+      />
+    );
   }
 
   return (
@@ -151,7 +158,6 @@ const PointOfSalesPage = () => {
         <div className="col-md-4">
           <h4 className="mb-3">Categories</h4>
           <div className="list-group">
-          
             {categories.map((category) => (
               <button
                 key={category.id}
@@ -176,26 +182,45 @@ const PointOfSalesPage = () => {
               onChange={handleSearch}
             />
           </div>
-          <ul className="list-group" style={{ maxHeight: '300px', overflowY: 'auto' }}>
-
-      
+          <ul
+            className="list-group"
+            style={{ maxHeight: "300px", width: "110", overflowY: "auto" }}
+          >
             {products
               .filter((product) => {
                 return (
-                  selectedCategory === "all" ||
+                  (selectedCategory === "all" &&
+                  product.name.toLowerCase().includes(searchTerm)) ||
                   (product.type === selectedCategory &&
                     product.name.toLowerCase().includes(searchTerm))
                 );
               })
               .map((product) => (
                 <li
-                  key={product.id}
+                  key={product._id}
                   className="list-group-item d-flex justify-content-between align-items-center"
-                  style={{ display: "flex", justifyContent: "space-evenly" }}
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    gap: "10px",
+                  }}
                 >
-                  <span style={{ flex: "0 0 50%" }}>{product.name}</span>
-                  <span style={{ flex: "0 0 25%" }}>
+                  <div style={{ flex: "0 0 25%" }}>
+                    <img
+                      width={50}
+                      src={product.image}
+                      alt={product.name}
+                      className="product-image"
+                    />
+                  </div>
+                  <span style={{ flex: "0 0 20%" }}>{product.name}</span>
+                  <span style={{ flex: "0 0 20%" }}>
                     ${product.unitPrice.toFixed(2)}
+                  </span>
+                  <span style={{ flex: "0 0 20%" }}>
+                    {product.amountInStock === 0
+                      ? "Out of Stock"
+                      : `${product.amountInStock} in Stock`}
                   </span>
                   <div
                     className="input-group input-group-sm"
@@ -207,6 +232,7 @@ const PointOfSalesPage = () => {
                   >
                     <button
                       className="btn btn-primary"
+                      disabled={product.amountInStock === 0}
                       onClick={() => handleAddProduct(product)}
                     >
                       <img src="/cart.svg" alt="Shopping Cart" />
